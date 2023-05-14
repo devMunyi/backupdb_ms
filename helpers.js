@@ -4,49 +4,49 @@ const { google } = require("googleapis");
 const { createReadStream, createWriteStream } = require("fs");
 const zip = require("bestzip");
 
-// async function createBackup(config, backupFileName) {
-//   const { host, user, password, database } = config;
-//   const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database}`;
-//   // const my_command = `mysqldump --user=${config.user} --password=${config.password} ${config.database}`;
-
-//   return new Promise((resolve, reject) => {
-//     const backupStream = exec(
-//       my_command,
-//       { maxBuffer: Infinity },
-//       (error, stdout, stderr) => {
-//         if (error) {
-//           reject(error);
-//         } else {
-//           resolve(stdout.toString());
-//         }
-//       }
-//     );
-
-//     const fileStream = createWriteStream(backupFileName);
-//     backupStream.stdout.pipe(fileStream);
-//   });
-// }
-
 async function createBackup(config, backupFileName) {
   const { host, user, password, database } = config;
-  const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database} > ${backupFileName}`;
+  const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database}`;
+  // const my_command = `mysqldump --user=${config.user} --password=${config.password} ${config.database}`;
 
-  // Check if the backup file already exists
-  if (fs.existsSync(backupFileName)) {
-    console.log('Backup file already exists.');
-    return;
-  }
+  return new Promise((resolve, reject) => {
+    const backupStream = exec(
+      my_command,
+      { maxBuffer: Infinity },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(stdout.toString());
+        }
+      }
+    );
 
-  // Create the backup file
-  try {
-    await exec(my_command);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-
-  console.log(`Backup created successfully: ${backupFileName}`);
+    const fileStream = createWriteStream(backupFileName);
+    backupStream.stdout.pipe(fileStream);
+  });
 }
+
+// async function createBackup(config, backupFileName) {
+//   const { host, user, password, database } = config;
+//   const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database} > ${backupFileName}`;
+
+//   // Check if the backup file already exists
+//   if (fs.existsSync(backupFileName)) {
+//     console.log('Backup file already exists.');
+//     return;
+//   }
+
+//   // Create the backup file
+//   try {
+//     await exec(my_command);
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   }
+
+//   console.log(`Backup created successfully: ${backupFileName}`);
+// }
 
 async function zipBackup(backupFileName, zipFileName) {
   try {
