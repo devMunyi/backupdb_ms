@@ -43,7 +43,7 @@ async function main() {
   }
 }
 
-let runRule = "15 22 * * *";
+let runRule = "31 17 * * *";
 
 // Run at midnight
 schedule.scheduleJob(runRule, async () => {
