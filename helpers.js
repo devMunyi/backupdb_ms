@@ -1,32 +1,8 @@
 const { exec } = require("child_process");
 const fs = require("fs");
 const { google } = require("googleapis");
-const { createReadStream, createWriteStream } = require("fs");
-const zip = require("bestzip");
-
-// async function createBackup(config, backupFileName) {
-//   const { host, user, password, database } = config;
-//   const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database}`;
-//   // const my_command = `mysqldump --user=${config.user} --password=${config.password} ${config.database}`;
-
-//   return new Promise((resolve, reject) => {
-//     const backupStream = exec(
-//       my_command,
-//       { maxBuffer: Infinity },
-//       (error, stdout, stderr) => {
-//         if (error) {
-//           reject(error);
-//         } else {
-//           resolve(stdout.toString());
-//         }
-//       }
-//     );
-
-//     const fileStream = createWriteStream(backupFileName);
-//     backupStream.stdout.pipe(fileStream);
-//   });
-// }
-
+const { createReadStream } = require("fs");
+const archiver = require('archiver');
 const util = require('util');
 
 async function createBackup(config, backupFileName) {
@@ -44,84 +20,6 @@ async function createBackup(config, backupFileName) {
     throw error;
   }
 }
-
-// async function createBackup(config, backupFileName) {
-//   const { host, user, password, database } = config;
-//   const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database}`;
-
-//   const execPromise = util.promisify(exec);
-
-//   try {
-//     const backupStream = execPromise(my_command, { maxBuffer: Infinity });
-
-//     const fileStream = createWriteStream(backupFileName);
-//     backupStream.stdout.pipe(fileStream);
-
-//     await new Promise((resolve, reject) => {
-//       backupStream.on('close', resolve);
-//       backupStream.on('error', reject);
-//     });
-
-//     return backupFileName;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-
-
-// async function createBackup(config, backupFileName) {
-//   const { host, user, password, database } = config;
-//   const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database} | gzip > ${backupFileName}`;
-
-//   return new Promise((resolve, reject) => {
-//     const backupStream = exec(
-//       my_command,
-//       { maxBuffer: Infinity },
-//       (error, stdout, stderr) => {
-//         if (error) {
-//           reject(error);
-//         } else {
-//           resolve(stdout.toString());
-//         }
-//       }
-//     );
-//   });
-// }
-
-// async function createBackup(config, backupFileName) {
-//   const { host, user, password, database } = config;
-//   const my_command = `mysqldump --host=${host} --port=3306 --user=${user} --password='${password}' ${database} > ${backupFileName}`;
-
-//   // Check if the backup file already exists
-//   if (fs.existsSync(backupFileName)) {
-//     console.log('Backup file already exists.');
-//     return;
-//   }
-
-//   // Create the backup file
-//   try {
-//     await exec(my_command);
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-
-//   console.log(`Backup created successfully: ${backupFileName}`);
-// }
-
-// async function zipBackup(backupFileName, zipFileName) {
-//   try {
-//     await zip({
-//       source: backupFileName,
-//       destination: zipFileName,
-//     });
-//   } catch (err) {
-//     console.error(`Error zipping the backup file: ${err}`);
-//     process.exit(1);
-//   }
-// }
-
-const archiver = require('archiver');
 
 async function zipBackup(backupFileName, zipFileName) {
   try {
@@ -242,7 +140,7 @@ async function backupDBV1(
     console.log(`Old backup files deleted from Google Drive`);
 
     const filesToDeleteLocally = [backupFileName, zipFileName];
-    // await deleteLocalFiles(filesToDeleteLocally);
+    await deleteLocalFiles(filesToDeleteLocally);
 
     console.log(`Backup process completed successfully`);
     return { status: "ok", code: 200 };

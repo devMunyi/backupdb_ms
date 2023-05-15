@@ -1,3 +1,4 @@
 node_modules
 .env
 build.sql
+service-account-key-file.json
